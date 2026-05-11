@@ -1,19 +1,19 @@
 package com.owifintrack.app.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 enum class TransactionType { INCOME, EXPENSE, TRANSFER }
 
+@Entity(tableName = "transactions")
 data class Transaction(
-    val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val type: TransactionType,
     val amount: Double,
-    val date: Long = System.currentTimeMillis(), // Gunakan Long untuk akurasi waktu
+    val date: Long = System.currentTimeMillis(),
     val note: String = "",
-    
-    // Relasi untuk Income/Expense
-    val accountId: Int = 0, // Dari akun mana uang keluar/masuk
-    val categoryId: Int = 0, // Untuk kategori apa
-    
-    // Relasi khusus untuk Transfer
-    val fromAccountId: Int = 0, // Dari akun sumber
-    val toAccountId: Int = 0    // Ke akun tujuan
+    val accountId: Int = 0,
+    val categoryId: Int = 0,
+    val fromAccountId: Int = 0,
+    val toAccountId: Int = 0
 )
