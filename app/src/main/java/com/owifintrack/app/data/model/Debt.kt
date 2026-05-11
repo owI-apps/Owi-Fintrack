@@ -1,16 +1,20 @@
 package com.owifintrack.app.data.model
 
-enum class DebtType { PAYABLE, RECEIVABLE } // Hutang (Payable), Piutang (Receivable)
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+enum class DebtType { PAYABLE, RECEIVABLE }
 enum class DebtStatus { ONGOING, PAID, OVERDUE }
 
+@Entity(tableName = "debts")
 data class Debt(
-    val id: Int = 0,
-    val personName: String, // Nama pihak terkait
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val personName: String,
     val type: DebtType,
     val totalAmount: Double,
     val remainingAmount: Double,
-    val dueDate: Long, // Jatuh tempo
+    val dueDate: Long,
     val status: DebtStatus,
-    val accountId: Int = 0, // Terhubung ke akun mana uangnya keluar/masuk
+    val accountId: Int = 0,
     val note: String = ""
 )
