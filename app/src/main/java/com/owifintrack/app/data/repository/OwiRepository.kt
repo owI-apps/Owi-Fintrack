@@ -1,6 +1,6 @@
 package com.owifintrack.app.data.repository
 
-import com.owifintrack.app.core.FinancialCalculator // INI YANG TADI TERTINGGAL
+import com.owifintrack.app.core.FinancialCalculator
 import com.owifintrack.app.data.dao.OwiDao
 import com.owifintrack.app.data.model.Account
 import com.owifintrack.app.data.model.Category
@@ -26,13 +26,13 @@ class OwiRepository(private val owiDao: OwiDao) {
     suspend fun insertCategory(category: Category) = owiDao.insertCategory(category)
     suspend fun insertTransaction(transaction: Transaction) = owiDao.insertTransaction(transaction)
     suspend fun insertDebt(debt: Debt) = owiDao.insertDebt(debt)
+    
+    // Fungsi baru untuk update hutang/piutang
+    suspend fun updateDebt(debt: Debt) = owiDao.updateDebt(debt)
 
     // ================= KALKULASI EXPERT (MENGHIDUPKAN OTAK) =================
-    // Ini adalah fungsi kunci yang memastikan bayangan keuangan pengguna akurat.
 
     fun getNetWorth(): Flow<Double> {
-        // Kita gabungkan 3 sumber data secara real-time menggunakan Flow.
-        // Jika salah satu data berubah, Net Worth akan otomatis terhitung ulang!
         return combine(
             getAllAccounts(),
             getAllTransactions(),
@@ -52,7 +52,7 @@ class OwiRepository(private val owiDao: OwiDao) {
     }
 
     fun getTotalDebt(): Flow<Double> {
-        return getDebts(DebtType.PAYABLE) // Flow otomatis menjumlahkan yang berstatus ONGOING di calculator nanti
+        return getDebts(DebtType.PAYABLE)
     }
 
     fun getTotalReceivable(): Flow<Double> {
