@@ -4,8 +4,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update // Tambahan baru!
 import com.owifintrack.app.data.model.Account
 import com.owifintrack.app.data.model.Category
+import com.owifintrack.app.data.model.CategoryType
 import com.owifintrack.app.data.model.Debt
 import com.owifintrack.app.data.model.DebtStatus
 import com.owifintrack.app.data.model.DebtType
@@ -39,6 +41,9 @@ interface OwiDao {
     // ================= DEBT (HUTANG & PIUTANG) =================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDebt(debt: Debt)
+
+    @Update // Fungsi baru untuk mengupdate data hutang (misal sisa berkurang)
+    suspend fun updateDebt(debt: Debt)
 
     @Query("SELECT * FROM debts WHERE type = :type AND status != :excludeStatus")
     fun getDebtsByType(type: DebtType, excludeStatus: DebtStatus = DebtStatus.PAID): Flow<List<Debt>>
