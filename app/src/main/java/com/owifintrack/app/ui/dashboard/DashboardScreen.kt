@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
@@ -25,7 +26,8 @@ fun formatRupiah(amount: Double): String {
 @Composable
 fun DashboardScreen(
     onAddClick: () -> Unit,
-    onHistoryClick: () -> Unit
+    onHistoryClick: () -> Unit,
+    onAccountsClick: () -> Unit // Parameter baru untuk ke halaman Akun
 ) {
     // 1. Menyuntikkan ViewModel ke dalam Layar beserta Pabriknya (Factory)
     val viewModel: DashboardViewModel = viewModel(
@@ -148,6 +150,16 @@ fun DashboardScreen(
                 Icon(Icons.Default.History, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Lihat Semua Riwayat Transaksi")
+            }
+
+            // Tombol Kelola Akun (BARU)
+            OutlinedButton(
+                onClick = onAccountsClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.AccountBalanceWallet, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Kelola Akun (Bank, E-Wallet, dll)")
             }
         }
     }
