@@ -26,10 +26,15 @@ fun OwiNavigation() {
             )
         }
         composable(Screen.AddTransaction.route) {
-            AddTransactionScreen(onBackClick = { navController.popBackStack() })
+            AddTransactionScreen(
+                onBackClick = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() } // Otomatis kembali ke Dashboard setelah simpan!
+            )
         }
         composable(Screen.History.route) {
-            HistoryScreen(onBackClick = { navController.popBackStack() })
+            HistoryScreen(
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }
