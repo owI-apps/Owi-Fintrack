@@ -1,5 +1,7 @@
 package com.owifintrack.app.ui.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -9,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -16,6 +19,7 @@ import androidx.compose.ui.unit.dp
 fun SettingsScreen(
     onBackClick: () -> Unit
 ) {
+    val context = LocalContext.current
     var isDarkMode by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -63,7 +67,7 @@ fun SettingsScreen(
             // DAFTAR PENGATURAN
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    // Pengaturan Tema (Dark Mode)
+                    // Tema
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -74,9 +78,20 @@ fun SettingsScreen(
                     }
                     HorizontalDivider()
 
-                    // Pengaturan Mata Uang
+                    // Bahasa (BARU)
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { /* Nanti diisi dialog currency */ },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { /* Nanti diisi logika ganti bahasa */ },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SettingsItem(icon = Icons.Default.Language, title = "Bahasa (Language)")
+                        Text("Indonesia", color = MaterialTheme.colorScheme.primary)
+                    }
+                    HorizontalDivider()
+
+                    // Mata Uang
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { },
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -85,9 +100,9 @@ fun SettingsScreen(
                     }
                     HorizontalDivider()
 
-                    // Pengaturan Keamanan
+                    // Keamanan
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { /* Nanti diisi halaman PIN/Biometric */ },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { },
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -96,9 +111,9 @@ fun SettingsScreen(
                     }
                     HorizontalDivider()
 
-                    // Backup & Restore
+                    // Backup
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { /* Nanti diisi fungsi export */ },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { },
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -108,22 +123,39 @@ fun SettingsScreen(
                 }
             }
 
-            // TENTANG APLIKASI
+            // DUKUNGAN & TENTANG
             Card(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SettingsItem(icon = Icons.Default.Info, title = "Tentang Owi Fintrack")
-                    Icon(Icons.Default.ChevronRight, contentDescription = "Masuk")
+                Column {
+                    // Dukung Pengembang via Trakteer (BERFUNGSI!)
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable {
+                            // Kode untuk membuka link Trakteer di browser
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://trakteer.id/owi_apps/gift"))
+                            context.startActivity(intent)
+                        },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SettingsItem(icon = Icons.Default.Favorite, title = "Dukung Pengembang")
+                        Icon(Icons.Default.OpenInNew, contentDescription = "Buka Browser")
+                    }
+                    HorizontalDivider()
+
+                    // Tentang Aplikasi
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth().clickable { },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SettingsItem(icon = Icons.Default.Info, title = "Tentang Owi Fintrack")
+                        Icon(Icons.Default.ChevronRight, contentDescription = "Masuk")
+                    }
                 }
             }
         }
     }
 }
 
-// Komponen kecil biar rapi
 @Composable
 fun SettingsItem(icon: ImageVector, title: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
