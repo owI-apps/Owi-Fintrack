@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Settings // Ikon baru
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,17 +20,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-// Fungsi helper untuk format Rupiah yang rapi
 fun formatRupiah(amount: Double): String {
     return "Rp %,.0f".format(amount).replace(',', '.')
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     onAddClick: () -> Unit,
     onHistoryClick: () -> Unit,
     onAccountsClick: () -> Unit,
-    onDebtsClick: () -> Unit // Parameter baru untuk Hutang/Piutang
+    onDebtsClick: () -> Unit,
+    onSettingsClick: () -> Unit // Parameter baru
 ) {
     val viewModel: DashboardViewModel = viewModel(
         factory = DashboardViewModelFactory(LocalContext.current.applicationContext as Application)
@@ -46,6 +48,17 @@ fun DashboardScreen(
     val safeReceivable = totalReceivable ?: 0.0
 
     Scaffold(
+        topBar = {
+            // TOP APP BAR BARU!
+            TopAppBar(
+                title = { Text("Owi Fintrack", fontWeight = FontWeight.Bold) },
+                actions = {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(Icons.Default.Settings, contentDescription = "Pengaturan")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
@@ -58,22 +71,15 @@ fun DashboardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
+                .padding(padding) // Padding dari Scaffold (menghindari tertutup AppBar)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = "Owi Fintrack",
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold
-            )
             Text(
                 text = "Bayangan Keuangan Nyata Anda", 
                 style = MaterialTheme.typography.bodyMedium, 
                 color = Color.Gray
             )
-
-            Spacer(modifier = Modifier.height(4.dp))
 
             val netWorthColor = if (safeNetWorth >= 0) Color(0xFF2E7D32) else Color(0xFFC62828)
             Card(
@@ -130,31 +136,21 @@ fun DashboardScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            OutlinedButton(
-                onClick = onHistoryClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            OutlinedButton(onClick = onHistoryClick, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.History, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Lihat Semua Riwayat Transaksi")
             }
 
-            OutlinedButton(
-                onClick = onAccountsClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            OutlinedButton(onClick = onAccountsClick, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.AccountBalanceWallet, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Kelola Akun (Bank, E-Wallet, dll)")
             }
 
-            // Tombol Hutang & Piutang (BARU)
-            OutlinedButton(
-                onClick = onDebtsClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            OutlinedButton(onClick = onDebtsClick, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.ReceiptLong, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Kelola Hutang & Piutang")
