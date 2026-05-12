@@ -16,11 +16,9 @@ import kotlinx.coroutines.launch
 
 class DebtViewModel(private val repository: OwiRepository) : ViewModel() {
 
-    // Ambil daftar Hutang (Uang kita yang keluar/masih harus dibayar)
     val payables: StateFlow<List<Debt>> = repository.getDebts(DebtType.PAYABLE)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // Ambil daftar Piutang (Uang orang lain yang harus masuk ke kita)
     val receivables: StateFlow<List<Debt>> = repository.getDebts(DebtType.RECEIVABLE)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -35,12 +33,31 @@ class DebtViewModel(private val repository: OwiRepository) : ViewModel() {
                 personName = personName,
                 type = type,
                 totalAmount = totalAmount,
-                remainingAmount = totalAmount, // Karena baru dibuat, sisa = total
-                dueDate = System.currentTimeMillis(), // Sementara pakai tanggal hari ini
+                remainingAmount = totalAmount,
+                dueDate = System.currentTimeMillis(),
                 status = DebtStatus.ONGOING,
                 note = note
             )
             repository.insertDebt(debt)
+        }
+    }
+
+    // FUNGSI BARU: Mencatat pembayaran/cicilan hutang atau piutang
+    fun payDebt(debt: Debt, paymentAmount: Double) {
+        viewModelScope.launch {
+            val newRemaining = debt.remainingAmount - paymentAmount
+            
+            // Jika sisa menjadi 0 atau minus, status berubah jadi LUNAS (PAID)
+            val newStatus = if (newRemaining <= 0.0) DebtStatus.PAID else DebtStatus.ONGOING
+            
+            // Pastikan sisa tidak minus (jika bayar lebih, dianggap lunas sempurna)
+            val finalRemaining = if (newRemaining < 0.0) 0.0 else newRemaining
+
+            val updatedDebt = debt.copy(
+                remainingAmount = finalRemaining,
+                status = newStatus
+            )
+            repository.updateDebt(updatedDebt)
         }
     }
 }
