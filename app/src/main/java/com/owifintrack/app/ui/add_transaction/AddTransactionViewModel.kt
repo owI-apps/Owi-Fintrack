@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.owifintrack.app.data.database.OwiDatabase
+import com.owifintrack.app.data.model.Account
 import com.owifintrack.app.data.model.Category
 import com.owifintrack.app.data.model.CategoryType
 import com.owifintrack.app.data.model.Transaction
@@ -17,10 +18,15 @@ import kotlinx.coroutines.launch
 
 class AddTransactionViewModel(private val repository: OwiRepository) : ViewModel() {
 
-    // Ambil kategori secara real-time untuk ditampilkan di dropdown
+    // Ambil Semua Akun (Cash, Bank, E-Wallet, dll)
+    val allAccounts: StateFlow<List<Account>> = repository.getAllAccounts()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Ambil Kategori Pemasukan
     val incomeCategories: StateFlow<List<Category>> = repository.getCategoriesByType(CategoryType.INCOME)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    // Ambil Kategori Pengeluaran
     val expenseCategories: StateFlow<List<Category>> = repository.getCategoriesByType(CategoryType.EXPENSE)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -29,7 +35,7 @@ class AddTransactionViewModel(private val repository: OwiRepository) : ViewModel
         type: TransactionType,
         amount: Double,
         note: String,
-        accountId: Int,
+        accountId: Int, // Sekarang kita pakai accountId yang dipilih user!
         categoryId: Int
     ) {
         viewModelScope.launch {
@@ -37,7 +43,7 @@ class AddTransactionViewModel(private val repository: OwiRepository) : ViewModel
                 type = type,
                 amount = amount,
                 note = note,
-                accountId = accountId, // Untuk saat ini default ke akun id 1 (Dompet Cash)
+                accountId = accountId, 
                 categoryId = categoryId
             )
             repository.insertTransaction(transaction)
