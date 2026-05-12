@@ -8,12 +8,14 @@ import com.owifintrack.app.ui.accounts.AccountScreen
 import com.owifintrack.app.ui.dashboard.DashboardScreen
 import com.owifintrack.app.ui.add_transaction.AddTransactionScreen
 import com.owifintrack.app.ui.history.HistoryScreen
+import com.owifintrack.app.ui.debt.DebtScreen // Import baru
 
 sealed class Screen(val route: String) {
     object Dashboard : Screen("dashboard")
     object AddTransaction : Screen("add_transaction")
     object History : Screen("history")
-    object Accounts : Screen("accounts") // Rute Baru!
+    object Accounts : Screen("accounts")
+    object Debts : Screen("debts") // Rute baru
 }
 
 @Composable
@@ -25,7 +27,8 @@ fun OwiNavigation() {
             DashboardScreen(
                 onAddClick = { navController.navigate(Screen.AddTransaction.route) },
                 onHistoryClick = { navController.navigate(Screen.History.route) },
-                onAccountsClick = { navController.navigate(Screen.Accounts.route) } // Navigasi Baru!
+                onAccountsClick = { navController.navigate(Screen.Accounts.route) },
+                onDebtsClick = { navController.navigate(Screen.Debts.route) } // Navigasi baru
             )
         }
         composable(Screen.AddTransaction.route) {
@@ -41,6 +44,11 @@ fun OwiNavigation() {
         }
         composable(Screen.Accounts.route) {
             AccountScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.Debts.route) { // Komponen baru
+            DebtScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
