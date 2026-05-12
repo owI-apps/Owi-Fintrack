@@ -18,33 +18,34 @@ import kotlinx.coroutines.launch
 
 class AddTransactionViewModel(private val repository: OwiRepository) : ViewModel() {
 
-    // Ambil Semua Akun (Cash, Bank, E-Wallet, dll)
     val allAccounts: StateFlow<List<Account>> = repository.getAllAccounts()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // Ambil Kategori Pemasukan
     val incomeCategories: StateFlow<List<Category>> = repository.getCategoriesByType(CategoryType.INCOME)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // Ambil Kategori Pengeluaran
     val expenseCategories: StateFlow<List<Category>> = repository.getCategoriesByType(CategoryType.EXPENSE)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // Fungsi Simpan Transaksi ke Database
+    // Fungsi Simpan yang sudah disempurnakan untuk mendukung Transfer
     fun saveTransaction(
         type: TransactionType,
         amount: Double,
         note: String,
-        accountId: Int, // Sekarang kita pakai accountId yang dipilih user!
-        categoryId: Int
+        accountId: Int,
+        categoryId: Int,
+        fromAccountId: Int,
+        toAccountId: Int
     ) {
         viewModelScope.launch {
             val transaction = Transaction(
                 type = type,
                 amount = amount,
                 note = note,
-                accountId = accountId, 
-                categoryId = categoryId
+                accountId = accountId,
+                categoryId = categoryId,
+                fromAccountId = fromAccountId, // Akan terisi jika tipe TRANSFER
+                toAccountId = toAccountId      // Akan terisi jika tipe TRANSFER
             )
             repository.insertTransaction(transaction)
         }
