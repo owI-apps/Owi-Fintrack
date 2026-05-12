@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-// Fungsi helper untuk format Rupiah yang rapi (Tanpa koma di desimal, pakai titik untuk ribuan)
+// Fungsi helper untuk format Rupiah yang rapi
 fun formatRupiah(amount: Double): String {
     return "Rp %,.0f".format(amount).replace(',', '.')
 }
@@ -27,21 +28,18 @@ fun formatRupiah(amount: Double): String {
 fun DashboardScreen(
     onAddClick: () -> Unit,
     onHistoryClick: () -> Unit,
-    onAccountsClick: () -> Unit // Parameter baru untuk ke halaman Akun
+    onAccountsClick: () -> Unit,
+    onDebtsClick: () -> Unit // Parameter baru untuk Hutang/Piutang
 ) {
-    // 1. Menyuntikkan ViewModel ke dalam Layar beserta Pabriknya (Factory)
     val viewModel: DashboardViewModel = viewModel(
         factory = DashboardViewModelFactory(LocalContext.current.applicationContext as Application)
     )
 
-    // 2. Mengambil data real-time dari ViewModel (StateFlow)
-    // Layar akan otomatis gambar ulang jika salah satu angka ini berubah!
     val netWorth by viewModel.netWorth.collectAsState()
     val totalAssets by viewModel.totalAssets.collectAsState()
     val totalDebt by viewModel.totalDebt.collectAsState()
     val totalReceivable by viewModel.totalReceivable.collectAsState()
 
-    // 3. Memastikan nilai tidak null (default 0.0)
     val safeNetWorth = netWorth ?: 0.0
     val safeAssets = totalAssets ?: 0.0
     val safeDebt = totalDebt ?: 0.0
@@ -64,13 +62,11 @@ fun DashboardScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Judul Aplikasi
             Text(
                 text = "Owi Fintrack",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
-            
             Text(
                 text = "Bayangan Keuangan Nyata Anda", 
                 style = MaterialTheme.typography.bodyMedium, 
@@ -79,8 +75,6 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // KARTU UTAMA: KEKAYAAN BERSIH (NET WORTH)
-            // Warna berubah otomatis: Hijau jika positif, Merah jika negatif
             val netWorthColor = if (safeNetWorth >= 0) Color(0xFF2E7D32) else Color(0xFFC62828)
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -98,12 +92,10 @@ fun DashboardScreen(
                 }
             }
 
-            // RINCIAN: ASET, HUTANG, PIUTANG
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Kartu Aset
                 Card(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
@@ -115,7 +107,6 @@ fun DashboardScreen(
                     }
                 }
 
-                // Kartu Hutang
                 Card(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
@@ -128,7 +119,6 @@ fun DashboardScreen(
                 }
             }
 
-            // Kartu Piutang (Baris kedua)
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -142,7 +132,6 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Tombol Lihat Riwayat
             OutlinedButton(
                 onClick = onHistoryClick,
                 modifier = Modifier.fillMaxWidth()
@@ -152,7 +141,6 @@ fun DashboardScreen(
                 Text("Lihat Semua Riwayat Transaksi")
             }
 
-            // Tombol Kelola Akun (BARU)
             OutlinedButton(
                 onClick = onAccountsClick,
                 modifier = Modifier.fillMaxWidth()
@@ -160,6 +148,16 @@ fun DashboardScreen(
                 Icon(Icons.Default.AccountBalanceWallet, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Kelola Akun (Bank, E-Wallet, dll)")
+            }
+
+            // Tombol Hutang & Piutang (BARU)
+            OutlinedButton(
+                onClick = onDebtsClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.ReceiptLong, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Kelola Hutang & Piutang")
             }
         }
     }
