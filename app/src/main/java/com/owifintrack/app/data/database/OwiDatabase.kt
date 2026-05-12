@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase // PERBAIKAN: Import yang benar untuk Room Callback
 import com.owifintrack.app.data.dao.OwiDao
 import com.owifintrack.app.data.model.Account
 import com.owifintrack.app.data.model.AccountType
@@ -35,7 +36,6 @@ abstract class OwiDatabase : RoomDatabase() {
                     OwiDatabase::class.java,
                     "owi_fintrack_database"
                 )
-                    // PETUGAS PERSIAPAN: Menambahkan data default jika database baru!
                     .addCallback(DatabaseCallback(context.applicationContext))
                     .build()
                 INSTANCE = instance
@@ -48,9 +48,9 @@ abstract class OwiDatabase : RoomDatabase() {
     private class DatabaseCallback(
         private val context: Context
     ) : Callback() {
-        override fun onCreate(connection: SQLiteConnection) {
-            super.onCreate(connection)
-            // Jalankan di background agar tidak menghambat aplikasi
+        // PERBAIKAN: Menggunakan SupportSQLiteDatabase
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            super.onCreate(db)
             CoroutineScope(Dispatchers.IO).launch {
                 populateDatabase(getDatabase(context).owiDao())
             }
